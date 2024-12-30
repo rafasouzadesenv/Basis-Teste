@@ -1,0 +1,46 @@
+﻿@page "/assuntos/details"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Assunto</h2>
+    <hr />
+    @if (assunto is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Descricao</dt>
+            <dd class="col-sm-10">@assunto.Descricao</dd>
+        </dl>
+        <div>
+            <a href="@($"/assuntos/edit?codas={assunto.CodAs}")">Edit</a> |
+            <a href="@($"/assuntos")">Voltar</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Assunto? assunto;
+
+    [SupplyParameterFromQuery]
+    private int CodAs { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        assunto = await context.Assuntos.FirstOrDefaultAsync(m => m.CodAs == CodAs);
+
+        if (assunto is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

@@ -1,0 +1,108 @@
+﻿@page "/livros/create"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@using TJRJApp.Repositorios
+@using BlazorBootstrap;
+
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Cadastrar</PageTitle>
+
+<h1>Cadastrar</h1>
+
+<h2>Livro</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Livro" OnValidSubmit="AddLivro" FormName="create" Enhance>
+
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Titulo:</label> 
+                <InputText id="titulo" @bind-Value="Livro.Titulo" class="form-control" /> 
+                <ValidationMessage For="() => Livro.Titulo" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="editora" class="form-label">Editora:</label> 
+                <InputText id="editora" @bind-Value="Livro.Editora" class="form-control" /> 
+                <ValidationMessage For="() => Livro.Editora" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="edicao" class="form-label">Edicao:</label> 
+                <InputNumber id="edicao" @bind-Value="Livro.Edicao" class="form-control" /> 
+                <ValidationMessage For="() => Livro.Edicao" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="anopublicacao" class="form-label">AnoPublicacao:</label> 
+                <InputText id="anopublicacao" @bind-Value="Livro.AnoPublicacao" class="form-control" /> 
+                <ValidationMessage For="() => Livro.AnoPublicacao" class="text-danger" /> 
+            </div> 
+            <div class="mb-3">
+                <label for="tipoAquisicao" class="form-label">Tipo de Aquisição:</label>
+                <InputSelect id="tipoAquisicao" @bind-Value="Livro.TipoAquisicaoID" class="form-control">                   
+                    <option value="">Selecionar</option>
+                    @foreach (var tipoAquisicao in livroRepositorio.GetTipoAquisicoes())
+                    {
+                        <option value="@tipoAquisicao.TipoAquisicaoCod">@tipoAquisicao.Descricao</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label for="preco" class="form-label">Valor R$:</label>
+                <InputNumber id="preco" TValue="double?" @bind-Value="Livro.Preco" EnableMinMax="true" Min="1" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="Assunto" class="form-label">Assunto:</label>
+                <InputSelect id="Assunto" @bind-Value="Livro.AssuntoID" class="form-control">
+                    <option value="">Selecionar</option>
+                    @foreach (var assunto in livroRepositorio.GetAssuntos())
+                    {
+                        <option value="@assunto.CodAs">@assunto.Descricao</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label for="Autor" class="form-label">Autor:</label>
+                <InputSelect id="autor" @bind-Value="Livro.AutorID" class="form-control">
+                    <option value="">Selecionar</option>
+                    @foreach (var autor in livroRepositorio.GetAutores())
+                    {
+                        <option value="@autor.AutorCodAu">@autor.Nome</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/livros">Voltar</a>
+</div>
+
+@code {
+       
+    [SupplyParameterFromForm]
+    private LivroModelCreate Livro { get; set; } = new();    
+    LivroRepositorio livroRepositorio = new LivroRepositorio();
+    private decimal numberVariable { get; set; }
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddLivro()
+    {
+        
+        Livro LivroBD = new Livro { Titulo = Livro.Titulo,
+                AnoPublicacao = Livro.AnoPublicacao,
+                Edicao = Livro.Edicao, Editora = Livro.Editora };
+        var valor = Convert.ToDecimal(Livro.Preco);        
+        LivroBD.LivroAquisicaos.Add(new LivroAquisicao { TipoAquisicaoCod = Livro.TipoAquisicaoID, Valor=valor});
+        LivroBD.LivroAutors.Add(new LivroAutor { AutorCodAu = (int)Livro.AutorID });
+        LivroBD.LivroAssuntos.Add(new LivroAssunto { AssuntoCodAs = (int)Livro.AssuntoID });
+        using var context = DbFactory.CreateDbContext();
+        context.Livros.Add(LivroBD);
+        
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/livros");
+    }
+}

@@ -1,0 +1,44 @@
+﻿@page "/autores/create"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Cadastrar</PageTitle>
+
+<h1>Cadastrar</h1>
+
+<h2>Autor</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Autor" OnValidSubmit="AddAutor" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome:</label> 
+                <InputText id="nome" @bind-Value="Autor.Nome" class="form-control" /> 
+                <ValidationMessage For="() => Autor.Nome" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/autores">Voltar</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Autor Autor { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddAutor()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Autors.Add(Autor);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/autores");
+    }
+}

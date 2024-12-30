@@ -1,0 +1,89 @@
+﻿@page "/autores/edit"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Autor</h2>
+<hr />
+@if (Autor is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Autor" OnValidSubmit="UpdateAutor" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Autor.AutorCodAu" value="@Autor.AutorCodAu" />
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome:</label>
+                    <InputText id="nome" @bind-Value="Autor.Nome" class="form-control" />
+                    <ValidationMessage For="() => Autor.Nome" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/autors">Voltar</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int AutorCodAu { get; set; }
+
+    [SupplyParameterFromForm]
+    private Autor? Autor { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Autor ??= await context.Autors.FirstOrDefaultAsync(m => m.AutorCodAu == AutorCodAu);
+
+        if (Autor is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateAutor()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Autor!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!AutorExists(Autor!.AutorCodAu))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/autors");
+    }
+
+    private bool AutorExists(int autorcodau)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Autors.Any(e => e.AutorCodAu == autorcodau);
+    }
+}

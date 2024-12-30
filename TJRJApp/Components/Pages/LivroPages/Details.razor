@@ -1,0 +1,52 @@
+﻿@page "/livros/details"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Livro</h2>
+    <hr />
+    @if (livro is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Titulo</dt>
+            <dd class="col-sm-10">@livro.Titulo</dd>
+            <dt class="col-sm-2">Editora</dt>
+            <dd class="col-sm-10">@livro.Editora</dd>
+            <dt class="col-sm-2">Edicao</dt>
+            <dd class="col-sm-10">@livro.Edicao</dd>
+            <dt class="col-sm-2">AnoPublicacao</dt>
+            <dd class="col-sm-10">@livro.AnoPublicacao</dd>
+        </dl>
+        <div>
+            <a href="@($"/livros/edit?livrocodl={livro.LivroCodl}")">Edit</a> |
+            <a href="@($"/livros")">Voltar</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Livro? livro;
+
+    [SupplyParameterFromQuery]
+    private int LivroCodl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        livro = await context.Livros.FirstOrDefaultAsync(m => m.LivroCodl == LivroCodl);
+
+        if (livro is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

@@ -1,0 +1,39 @@
+﻿@page "/livros"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using TJRJApp.Models
+@using TJRJApp.Context
+@implements IAsyncDisposable
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="livros/create">Cadastrar New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Livros">
+    <PropertyColumn Property="livro => livro.Titulo" />
+    <PropertyColumn Property="livro => livro.Editora" />
+    <PropertyColumn Property="livro => livro.Edicao" />
+    <PropertyColumn Property="livro => livro.AnoPublicacao" />
+
+    <TemplateColumn Context="livro">
+        <a href="@($"livros/edit?livrocodl={livro.LivroCodl}")">Edit</a> |
+        <a href="@($"livros/details?livrocodl={livro.LivroCodl}")">Details</a> |
+        <a href="@($"livros/delete?livrocodl={livro.LivroCodl}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private BasisContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

@@ -1,0 +1,89 @@
+﻿@page "/assuntos/edit"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Assunto</h2>
+<hr />
+@if (Assunto is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Assunto" OnValidSubmit="UpdateAssunto" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Assunto.CodAs" value="@Assunto.CodAs" />
+                <div class="mb-3">
+                    <label for="descricao" class="form-label">Descricao:</label>
+                    <InputText id="descricao" @bind-Value="Assunto.Descricao" class="form-control" />
+                    <ValidationMessage For="() => Assunto.Descricao" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/assuntos">Voltar</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int CodAs { get; set; }
+
+    [SupplyParameterFromForm]
+    private Assunto? Assunto { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Assunto ??= await context.Assuntos.FirstOrDefaultAsync(m => m.CodAs == CodAs);
+
+        if (Assunto is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateAssunto()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Assunto!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!AssuntoExists(Assunto!.CodAs))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/assuntos");
+    }
+
+    private bool AssuntoExists(int codas)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Assuntos.Any(e => e.CodAs == codas);
+    }
+}

@@ -1,0 +1,46 @@
+﻿@page "/autores/details"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Autor</h2>
+    <hr />
+    @if (autor is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Nome</dt>
+            <dd class="col-sm-10">@autor.Nome</dd>
+        </dl>
+        <div>
+            <a href="@($"/autors/edit?autorcodau={autor.AutorCodAu}")">Edit</a> |
+            <a href="@($"/autors")">Voltar</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Autor? autor;
+
+    [SupplyParameterFromQuery]
+    private int AutorCodAu { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        autor = await context.Autors.FirstOrDefaultAsync(m => m.AutorCodAu == AutorCodAu);
+
+        if (autor is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

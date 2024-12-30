@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Projeto\\TJRJApp\\TJRJApp\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\TJRJApp.bundle.scp.css",
+      "PackagePath": "staticwebassets\\TJRJApp.m2512fzgi9.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Projeto\\TJRJApp\\TJRJApp\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Projeto\\TJRJApp\\TJRJApp\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Projeto\\TJRJApp\\TJRJApp\\wwwroot\\reports\\ReportMvc.frx",
+      "PackagePath": "staticwebassets\\reports\\ReportMvc.frx"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.TJRJApp.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.TJRJApp.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.TJRJApp.props",
+      "PackagePath": "build\\TJRJApp.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.TJRJApp.props",
+      "PackagePath": "buildMultiTargeting\\TJRJApp.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.TJRJApp.props",
+      "PackagePath": "buildTransitive\\TJRJApp.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

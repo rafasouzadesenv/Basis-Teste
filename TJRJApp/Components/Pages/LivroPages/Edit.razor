@@ -1,0 +1,104 @@
+﻿@page "/livros/edit"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Livro</h2>
+<hr />
+@if (Livro is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Livro" OnValidSubmit="UpdateLivro" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Livro.LivroCodl" value="@Livro.LivroCodl" />
+                <div class="mb-3">
+                    <label for="titulo" class="form-label">Titulo:</label>
+                    <InputText id="titulo" @bind-Value="Livro.Titulo" class="form-control" />
+                    <ValidationMessage For="() => Livro.Titulo" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="editora" class="form-label">Editora:</label>
+                    <InputText id="editora" @bind-Value="Livro.Editora" class="form-control" />
+                    <ValidationMessage For="() => Livro.Editora" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="edicao" class="form-label">Edicao:</label>
+                    <InputNumber id="edicao" @bind-Value="Livro.Edicao" class="form-control" />
+                    <ValidationMessage For="() => Livro.Edicao" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="anopublicacao" class="form-label">AnoPublicacao:</label>
+                    <InputText id="anopublicacao" @bind-Value="Livro.AnoPublicacao" class="form-control" />
+                    <ValidationMessage For="() => Livro.AnoPublicacao" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/livros">Voltar</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int LivroCodl { get; set; }
+
+    [SupplyParameterFromForm]
+    private Livro? Livro { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Livro ??= await context.Livros.FirstOrDefaultAsync(m => m.LivroCodl == LivroCodl);
+
+        if (Livro is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateLivro()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Livro!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!LivroExists(Livro!.LivroCodl))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/livros");
+    }
+
+    private bool LivroExists(int livrocodl)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Livros.Any(e => e.LivroCodl == livrocodl);
+    }
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "ContainingType": "TJRJApp.Controllers.ReportController",
+    "Method": "CreateReport",
+    "RelativePath": "Report/CreateReport",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TJRJApp.Controllers.ReportController",
+    "Method": "RelatorioReport",
+    "RelativePath": "Report/RelatorioReport",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

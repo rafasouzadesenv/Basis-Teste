@@ -1,0 +1,55 @@
+﻿@page "/autores/delete"
+@using Microsoft.EntityFrameworkCore
+@using TJRJApp.Models
+@inject IDbContextFactory<TJRJApp.Context.BasisContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete</PageTitle>
+
+<h1>Delete</h1>
+
+<p>Are you sure you want to delete this?</p>
+<div>
+    <h2>Autor</h2>
+    <hr />
+    @if (autor is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Nome</dt>
+            <dd class="col-sm-10">@autor.Nome</dd>
+        </dl>
+        <EditForm method="post" Model="autor" OnValidSubmit="DeleteAutor" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(autor is null)">Delete</button> |
+            <a href="/autors">Voltar</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private Autor? autor;
+
+    [SupplyParameterFromQuery]
+    private int AutorCodAu { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        autor = await context.Autors.FirstOrDefaultAsync(m => m.AutorCodAu == AutorCodAu);
+
+        if (autor is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteAutor()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Autors.Remove(autor!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/autors");
+    }
+}
